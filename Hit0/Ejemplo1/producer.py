@@ -1,14 +1,23 @@
 import pika
 
-broker = pika.ConnectionParameters(host='127.0.0.1', port=5672, credentials=pika.PlainCredentials ('guest', 'guest'))
+broker = pika.ConnectionParameters(
+    host='127.0.0.1',
+    port=5672,
+    credentials=pika.PlainCredentials('guest', 'guest')
+)
 
 connection = pika.BlockingConnection(parameters=broker)
+channel = connection.channel()
 
-canal= connection.channel()##Devuelve un objeto de tipo Channel
+# Asegurarse de que la cola exista antes de publicar.
+channel.queue_declare(queue='cola_mensajes', durable=False)
 
 for i in range(1, 11):
-    canal.basic_publish(##funcion para publicar en la cola
-        exchange='',##vacio porque el default es punto a punto (el que se requiere para este ejemplo)
-        routing_key= 'cola_mensajes',##nombre de la cola donde se va a publicar el mensaje
-        body= f"Mensaje {i}"
+    channel.basic_publish(
+        exchange='',
+        routing_key='cola_mensajes',
+        body=f"Mensaje {i}"
     )
+    print(f"[Producer] Mensaje {i} enviado")
+
+connection.close()    
