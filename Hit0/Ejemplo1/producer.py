@@ -9,7 +9,6 @@ broker = pika.ConnectionParameters(
 connection = pika.BlockingConnection(parameters=broker)
 channel = connection.channel()
 
-# Asegurarse de que la cola exista antes de publicar.
 channel.queue_declare(queue='cola_mensajes', durable=False)
 
 for i in range(1, 11):

@@ -10,8 +10,7 @@ connection = pika.BlockingConnection(parameters=broker)
 channel = connection.channel()
 
 channel.queue_declare(queue='cola_mensajes', durable=False)
-channel.basic_qos(prefetch_count=1)##prefetch_count=1 indica que el consumidor recibe un mensaje a la vez hasta que
-#confirme el anterior
+channel.basic_qos(prefetch_count=1)
 
 print('[Consumer] Esperando mensajes. Presiona CTRL+C para salir.')
 
