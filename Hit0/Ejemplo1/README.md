@@ -4,6 +4,31 @@
 
 Este ejemplo demuestra el uso de RabbitMQ en un patrón punto a punto: un productor envía mensajes a una cola, y los consumidores los procesan. Cada mensaje es procesado exactamente por un consumidor.
 
+### Arquitectura
+
+```
+┌─────────────────┐
+│   Producer      │ Envía 10 mensajes
+└────────┬────────┘
+         │
+         ▼
+┌──────────────────────────────────────┐
+│ Direct Exchange                      │ (cola_mensajes)
+│ routing_key: ruta                    │
+└──────────┬──────────────────────────┘
+           │
+           ▼
+┌──────────────────────────────────────┐
+│  Queue: cola_mensajes                │ (1 cola compartida)
+└──┬──────────────────┬──────────────┬─┘
+   │                  │              │
+   ▼                  ▼              ▼
+┌────────┐ ┌────────┐ ┌────────┐
+│Consum. │ │Consum. │ │Consum. │  Round-robin
+│  1     │ │  2     │ │  3     │  (Msg 1→C1, Msg 2→C2, Msg 3→C1...)
+└────────┘ └────────┘ └────────┘
+```
+
 ### Archivos
 - `producer.py`: Envía 10 tareas numeradas a la cola `cola_mensajes`.
 - `consumer.py`: Consumidor que recibe e imprime mensajes de la cola.
@@ -21,23 +46,6 @@ Este ejemplo demuestra el uso de RabbitMQ en un patrón punto a punto: un produc
 - Ejemplo observado: Mensaje 1 → Consumidor 1, Mensaje 2 → Consumidor 2, Mensaje 3 → Consumidor 1, etc.
 - Cada consumidor procesa aproximadamente la mitad de los mensajes (5 cada uno, si son 10).
 - No hay duplicados; cada mensaje se procesa exactamente una vez.
-
-### Cómo ejecutar
-
-1. Asegúrate de que RabbitMQ esté corriendo en `localhost:5672` (usuario/contraseña: guest/guest).
-2. Ejecuta el productor:
-   ```
-   python Hit0/Ejemplo1/producer.py
-   ```
-3. Para 1 consumidor:
-   ```
-   python Hit0/Ejemplo1/consumer.py
-   ```
-4. Para 2 consumidores (en terminales separadas):
-   ```
-   python Hit0/Ejemplo1/consumer.py
-   ```
-   (Ejecuta el comando dos veces en terminales distintas).
 
 ### Explicación de round-robin en RabbitMQ
 
